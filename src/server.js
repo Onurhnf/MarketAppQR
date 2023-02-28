@@ -5,7 +5,7 @@ import path from "path";
 import { app } from "./app.js";
 
 const __dirname = path.resolve();
-dotenv.config({ path: path.join(__dirname, "config.env") });
+dotenv.config({ path: path.join(__dirname, ".env") });
 
 const DB = process.env.DATABASE.replace(
   "<PASSWORD>",
