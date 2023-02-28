@@ -1,11 +1,11 @@
 /* eslint-disable no-console */
 import dotenv from "dotenv";
 import mongoose from "mongoose";
-import validator from "validator";
-
+import path from "path";
 import { app } from "./app.js";
 
-dotenv.config({ path: "./config.env" });
+const __dirname = path.resolve();
+dotenv.config({ path: path.join(__dirname, "config.env") });
 
 const DB = process.env.DATABASE.replace(
   "<PASSWORD>",
