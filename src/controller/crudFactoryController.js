@@ -1,9 +1,9 @@
-import { Helpers } from "../util/Helpers.js";
+import { catchAsync } from "../util/Helpers.js";
 import ErrorHandler from "../util/ErrorHandler.js";
 import APIFeatures from "../util/ApiFeatures.js";
 
 export const deleteOne = (Model) =>
-  Helpers.catchAsync(async (req, res, next) => {
+  catchAsync(async (req, res, next) => {
     const doc = await Model.findByIdAndDelete(req.params.id);
 
     if (!doc) {
@@ -17,7 +17,7 @@ export const deleteOne = (Model) =>
   });
 
 export const updateOne = (Model) =>
-  Helpers.catchAsync(async (req, res, next) => {
+  catchAsync(async (req, res, next) => {
     const doc = await Model.findByIdAndUpdate(req.params.id, req.body, {
       new: true,
       runValidators: true,
@@ -36,7 +36,7 @@ export const updateOne = (Model) =>
   });
 
 export const createOne = (Model) =>
-  Helpers.catchAsync(async (req, res, next) => {
+  catchAsync(async (req, res, next) => {
     const doc = await Model.create(req.body);
 
     res.status(201).json({
@@ -48,7 +48,7 @@ export const createOne = (Model) =>
   });
 
 export const getOne = (Model, popOptions) =>
-  Helpers.catchAsync(async (req, res, next) => {
+  catchAsync(async (req, res, next) => {
     let query = Model.findById(req.params.id);
     if (popOptions) query = query.populate(popOptions);
     const doc = await query;
@@ -66,7 +66,7 @@ export const getOne = (Model, popOptions) =>
   });
 
 export const getAll = (Model) =>
-  Helpers.catchAsync(async (req, res, next) => {
+  catchAsync(async (req, res, next) => {
     const filter = {};
 
     const features = new APIFeatures(Model.find(filter), req.query)

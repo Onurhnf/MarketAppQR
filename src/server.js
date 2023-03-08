@@ -1,7 +1,7 @@
-/* eslint-disable no-console */
 import dotenv from "dotenv";
 import mongoose from "mongoose";
 import path from "path";
+
 import { app } from "./app.js";
 
 const __dirname = path.resolve();

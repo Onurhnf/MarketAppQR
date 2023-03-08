@@ -15,8 +15,6 @@ app.use(express.json());
 app.use("/api/v1/users", userRouter);
 
 app.all("*", (req, res, next) => {
-  console.log("asddsadsa");
-
   next(new ErrorHandler(`Cannot find ${req.originalUrl}`, 404));
 });
 app.use(ErrorCatcher);
