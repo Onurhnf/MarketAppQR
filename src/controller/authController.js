@@ -1,11 +1,13 @@
+import crypto from "crypto";
 import ErrorHandler from "../util/ErrorHandler.js";
 import { User } from "../schema/userSchema.js";
 import { HttpStatus } from "../util/Constants.js";
-import { catchAsync, createToken } from "../util/Helpers.js";
+import { catchAsync, createAndSendToken } from "../util/Helpers.js";
+import sendEmail from "../util/Email.js";
 
 const authController = {
   /**
-   * Sign up
+   ****************** Sign up ******************
    */
   signUp: catchAsync(async (req, res, next) => {
     const newUser = await User.create({
@@ -15,18 +17,11 @@ const authController = {
       passwordConfirm: req.body.passwordConfirm,
     });
 
-    const token = createToken(newUser._id);
-    res.status(HttpStatus.CREATED).json({
-      status: "success",
-      token,
-      data: {
-        user: newUser,
-      },
-    });
+    createAndSendToken(newUser, HttpStatus.CREATED, res);
   }),
 
   /**
-   * Login
+   ****************** Login ******************
    */
   login: catchAsync(async (req, res, next) => {
     const { email, password } = req.body;
@@ -50,15 +45,10 @@ const authController = {
         )
       );
     }
-
-    const token = createToken(user._id);
-    res.status(HttpStatus.OK).json({
-      status: "success",
-      token,
-    });
+    createAndSendToken(user, HttpStatus.OK, res);
   }),
   /**
-   *
+   ****************** Forgot Password ******************
    */
   forgotPassword: catchAsync(async (req, res, next) => {
     const user = await User.findOne({ email: req.body.email });
@@ -67,8 +57,90 @@ const authController = {
 
     const resetToken = user.createResetPasswordToken();
     await user.save({ validateBeforeSave: false });
+
+    try {
+      const resetURL = `${req.protocol}://${req.get(
+        "host"
+      )}/api/v1/users/resetPassword/${resetToken}`;
+      await sendEmail({
+        email: user.email,
+        subject: "Password reset",
+        message: `Click here to reset your password: ${resetURL}`,
+      });
+
+      res.status(200).json({
+        status: "success",
+        message: "Token sent to email!",
+      });
+    } catch (err) {
+      user.passwordResetToken = undefined;
+      user.passwordResetExpires = undefined;
+      await user.save({ validateBeforeSave: false });
+
+      return next(
+        new ErrorHandler(
+          "There was an error while sending the email. Try again later!"
+        ),
+        HttpStatus.INTERNAL_SERVER_ERROR
+      );
+    }
   }),
-  resetPassword: (res, req, next) => {},
+  /**
+   ****************** Reset Password ******************
+   */
+  resetPassword: catchAsync(async (req, res, next) => {
+    const passwordResetToken = crypto
+      .createHash("sha256")
+      .update(req.params.token)
+      .digest("hex");
+
+    const user = await User.findOne({
+      passwordResetToken,
+      passwordResetExpires: { $gt: Date.now() },
+    });
+
+    if (!user) {
+      return next(
+        new ErrorHandler(
+          "Token is invalid or has expired",
+          HttpStatus.BAD_REQUEST
+        )
+      );
+    }
+
+    user.password = req.body.password;
+    user.passwordConfirm = req.body.passwordConfirm;
+    user.passwordResetToken = undefined;
+    user.passwordResetExpires = undefined;
+    await user.save();
+
+    res.status(HttpStatus.OK).json({
+      status: "success",
+    });
+  }),
+  /**
+   ****************** Update Password ******************
+   */
+  updateMyPassword: catchAsync(async (req, res, next) => {
+    const user = await User.findById(req.user.id).select("+password");
+
+    if (
+      !(await user.comparePasswords(req.body.passwordCurrent, user.password))
+    ) {
+      return next(
+        new ErrorHandler(
+          "Your current password is wrong.",
+          HttpStatus.UNAUTHORIZED
+        )
+      );
+    }
+
+    user.password = req.body.password;
+    user.passwordConfirm = req.body.passwordConfirm;
+    await user.save();
+
+    createAndSendToken(user, HttpStatus.OK, res);
+  }),
 };
 
 export default authController;

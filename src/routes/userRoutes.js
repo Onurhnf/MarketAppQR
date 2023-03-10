@@ -15,7 +15,16 @@ userRouter
 userRouter.post("/signup", authController.signUp);
 userRouter.post("/login", authController.login);
 
+userRouter.patch(
+  "/updateMyPassword",
+  security.protect,
+  authController.updateMyPassword
+);
+
+userRouter.patch("/updateMe", security.protect, userController.updateMe);
+userRouter.delete("/deleteMe", security.protect, userController.deleteMe);
+
 userRouter.post("/forgotPassword", authController.forgotPassword);
-userRouter.post("/resetPassword", authController.resetPassword);
+userRouter.patch("/resetPassword/:token", authController.resetPassword);
 
 export default userRouter;

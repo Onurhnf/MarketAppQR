@@ -47,41 +47,60 @@ export const userSchema = new mongoose.Schema({
     select: false,
   },
 });
+
+//      ********** MIDDLEWARES **********
+
 userSchema.pre("save", async function (next) {
   if (!this.isModified("password")) return next();
-
   this.password = await bcrypt.hash(this.password, 12);
   this.passwordConfirm = undefined;
-
   next();
 });
 
+userSchema.pre("save", function (next) {
+  if (!this.isModified("password") || this.isNew) return next();
+  this.passwordChangedAt = Date.now() - 1000;
+  next();
+});
+
+userSchema.pre(/^find/, function (next) {
+  this.find({ active: { $ne: false } });
+  next();
+});
+
+//      ********** METHODS **********
+
+/**
+ * @param candidate posted password
+ * @param actual acutal password
+ * @returns boolean
+ */
 userSchema.methods.comparePasswords = async function (candidate, actual) {
   return await bcrypt.compare(candidate, actual);
 };
 
+/**
+ * @param JWTTimestamp timestampt /1000 which JWT creates
+ * @returns boolean
+ */
 userSchema.methods.changedPasswordAfter = function (JWTTimestamp) {
   if (this.passwordChangedAt) {
-    const changedTimestamp = parseInt(
-      this.passwordChangedAt.getTime() / 1000,
-      10
-    );
-
+    const changedTimestamp = parseInt(this.passwordChangedAt / 1000, 10);
     return JWTTimestamp < changedTimestamp;
   }
-
-  // False means NOT changed
-  return false;
+  return false; // False means NOT changed
 };
 
+/**
+ * @returns reset token
+ */
 userSchema.methods.createResetPasswordToken = function () {
   const resetToken = crypto.randomBytes(32).toString("hex");
-
+  // eslint-disable-next-line prettier/prettier
   this.passwordResetToken = crypto
     .createHash("sha256")
     .update(resetToken)
     .digest("hex");
-
   this.passwordResetExpires = Date.now() + 10 * 60 * 1000;
 
   return resetToken;
