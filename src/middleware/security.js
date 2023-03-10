@@ -47,6 +47,19 @@ const security = {
     res.locals.user = currentUser;
     next();
   }),
+  restrictTo:
+    (...roles) =>
+    (req, res, next) => {
+      if (!roles.includes(req.user.role)) {
+        return next(
+          new ErrorHandler(
+            "You do not have permission to perform this action",
+            HttpStatus.FORBIDDEN
+          )
+        );
+      }
+      next();
+    },
 };
 
 export default security;

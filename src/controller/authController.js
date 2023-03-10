@@ -57,6 +57,18 @@ const authController = {
       token,
     });
   }),
+  /**
+   *
+   */
+  forgotPassword: catchAsync(async (req, res, next) => {
+    const user = await User.findOne({ email: req.body.email });
+    if (!user)
+      return next(new ErrorHandler("Email not found", HttpStatus.NOT_FOUND));
+
+    const resetToken = user.createResetPasswordToken();
+    await user.save({ validateBeforeSave: false });
+  }),
+  resetPassword: (res, req, next) => {},
 };
 
 export default authController;

@@ -1,6 +1,8 @@
 import mongoose from "mongoose";
 import validator from "validator";
 import bcrypt from "bcryptjs";
+import crypto from "crypto";
+import { Roles } from "../util/Constants.js";
 
 export const userSchema = new mongoose.Schema({
   name: {
@@ -13,6 +15,11 @@ export const userSchema = new mongoose.Schema({
     unique: true,
     lowercase: true,
     validate: [validator.isEmail, "Please provide a valid Email"],
+  },
+  role: {
+    type: String,
+    enum: Object.values(Roles),
+    default: Roles.User,
   },
   password: {
     type: String,
@@ -31,9 +38,9 @@ export const userSchema = new mongoose.Schema({
       message: "Passwords do not match",
     },
   },
-  passwordChangedAt: Date,
+  passwordChangedAt: Number,
   passwordResetToken: String,
-  passwordResetExpires: Date,
+  passwordResetExpires: Number,
   active: {
     type: Boolean,
     default: true,
@@ -65,6 +72,19 @@ userSchema.methods.changedPasswordAfter = function (JWTTimestamp) {
 
   // False means NOT changed
   return false;
+};
+
+userSchema.methods.createResetPasswordToken = function () {
+  const resetToken = crypto.randomBytes(32).toString("hex");
+
+  this.passwordResetToken = crypto
+    .createHash("sha256")
+    .update(resetToken)
+    .digest("hex");
+
+  this.passwordResetExpires = Date.now() + 10 * 60 * 1000;
+
+  return resetToken;
 };
 
 export const User = mongoose.model("User", userSchema);

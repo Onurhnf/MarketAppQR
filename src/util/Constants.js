@@ -20,3 +20,8 @@ export const TimeIntervals = {
   HOUR: 60 * 60 * 1000,
   DAY: 24 * 60 * 60 * 1000,
 };
+
+export const Roles = Object.freeze({
+  User: "user",
+  Admin: "admin",
+});
