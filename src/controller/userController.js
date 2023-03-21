@@ -41,7 +41,7 @@ const userController = {
       }
     );
 
-    res.status(200).json({
+    res.status(HttpStatus.OK).json({
       status: "success",
       data: {
         user: updatedUser,

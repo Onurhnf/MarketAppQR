@@ -33,15 +33,17 @@ export const catchAsync = (fn) => (req, res, next) => {
  * @param id to sign token with id
  * @returns  token
  */
-export const createToken = (id) => {
-  const token = Jwt.sign({ id }, process.env.JWT_SECRET, {
-    expiresIn: process.env.JWT_EXPIRES_IN,
-  });
+export const createToken = (id, secret, expiresIn) => {
+  const token = Jwt.sign({ id }, secret, { expiresIn });
   return token;
 };
 
 export const createAndSendToken = (user, statusCode, res) => {
-  const token = createToken(user._id);
+  const token = createToken(
+    user._id,
+    process.env.JWT_SECRET,
+    process.env.JWT_EXPIRES_IN
+  );
 
   user.password = undefined;
   res.status(statusCode).json({

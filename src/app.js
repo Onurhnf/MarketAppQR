@@ -9,6 +9,9 @@ import hpp from "hpp";
 import userRouter from "./routes/userRoutes.js";
 import ErrorHandler from "./util/ErrorHandler.js";
 import { ErrorCatcher } from "./controller/errorController.js";
+import marketRouter from "./routes/marketRoutes.js";
+import productRouter from "./routes/productRoutes.js";
+import { HttpStatus } from "./util/Constants.js";
 
 export const app = express();
 console.log("appjs.env", process.env.NODE_ENV);
@@ -32,8 +35,12 @@ app.use(hpp());
 // ******* ROUTES *******
 
 app.use("/api/v1/users", userRouter);
+app.use("/api/v1/market", marketRouter);
+app.use("/api/v1/product", productRouter);
 
 app.all("*", (req, res, next) => {
-  next(new ErrorHandler(`Cannot find ${req.originalUrl}`, 404));
+  next(
+    new ErrorHandler(`Cannot find ${req.originalUrl}`, HttpStatus.NOT_FOUND)
+  );
 });
 app.use(ErrorCatcher);
