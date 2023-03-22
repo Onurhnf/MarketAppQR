@@ -12,6 +12,7 @@ import { ErrorCatcher } from "./controller/errorController.js";
 import marketRouter from "./routes/marketRoutes.js";
 import productRouter from "./routes/productRoutes.js";
 import { HttpStatus } from "./util/Constants.js";
+import marketStockRouter from "./routes/marketStockRoutes.js";
 
 export const app = express();
 console.log("appjs.env", process.env.NODE_ENV);
@@ -37,6 +38,7 @@ app.use(hpp());
 app.use("/api/v1/users", userRouter);
 app.use("/api/v1/market", marketRouter);
 app.use("/api/v1/product", productRouter);
+// app.use("/api/v1/marketStock", marketStockRouter);
 
 app.all("*", (req, res, next) => {
   next(

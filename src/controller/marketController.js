@@ -48,6 +48,15 @@ const marketController = {
       }
     }
   }),
+  getMarket: catchAsync(async (req, res, next) => {
+    const { marketid } = req.params;
+    const market = await Market.findById(marketid);
+
+    res.status(HttpStatus.OK).json({
+      status: "success",
+      data: { market },
+    });
+  }),
 };
 
 export default marketController;
