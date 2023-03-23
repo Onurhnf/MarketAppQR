@@ -74,7 +74,7 @@ marketStockSchema.pre("insertMany", async function (next, options) {
       new ErrorHandler(
         duplicates.map(
           (stock) =>
-            `Duplicate market stock for marketid: ${stock.marketid} and productid: ${stock.productid}`
+            `Duplicate while posting marketid: ${stock.marketid} and productid: ${stock.productid}`
         ),
         HttpStatus.CONFLICT
       )
