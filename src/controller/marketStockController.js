@@ -136,6 +136,27 @@ const marketStockController = {
       data: null,
     });
   }),
+
+  getMarketsAllStock: catchAsync(async (req, res, next) => {
+    const { marketid } = req.params;
+
+    try {
+      await Market.findById(marketid);
+    } catch (error) {
+      return next(
+        new ErrorHandler(
+          "There is no market with that id",
+          HttpStatus.NOT_FOUND
+        )
+      );
+    }
+
+    const allStock = await MarketStock.find({ marketid });
+    res.status(HttpStatus.OK).json({
+      status: "success",
+      data: allStock,
+    });
+  }),
 };
 
 export default marketStockController;

@@ -41,6 +41,13 @@ export const userSchema = new mongoose.Schema({
   passwordChangedAt: Number,
   passwordResetToken: String,
   passwordResetExpires: Number,
+  responsibleMarkets: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Market",
+      select: false,
+    },
+  ],
   active: {
     type: Boolean,
     default: true,

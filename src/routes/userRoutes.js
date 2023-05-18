@@ -2,6 +2,7 @@ import express from "express";
 import authController from "../controller/authController.js";
 import userController from "../controller/userController.js";
 import security from "../middleware/security.js";
+import { Roles } from "../util/Constants.js";
 
 const userRouter = express.Router();
 
@@ -9,7 +10,7 @@ userRouter
   .route("/")
   .get(
     security.protect,
-    security.restrictTo("admin"),
+    security.restrictTo(Roles.Admin),
     userController.getAllUsers
   );
 userRouter.post("/signup", authController.signUp);

@@ -24,6 +24,7 @@ export const TimeIntervals = {
 export const Roles = Object.freeze({
   User: "user",
   Admin: "admin",
+  Staff: "staff",
 });
 
 export const CartStatus = Object.freeze({
