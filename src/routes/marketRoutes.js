@@ -6,7 +6,7 @@ import security from "../middleware/security.js";
 const marketRouter = express.Router();
 
 marketRouter.get(
-  "/:marketid",
+  "/:id",
   security.protect,
   security.restrictTo("admin", "user"),
   marketController.getMarket
@@ -25,12 +25,33 @@ marketRouter.patch(
   security.restrictTo("admin"),
   marketController.QRCodeImage
 );
-
-marketRouter.post(
-  "/:marketid/addStock",
+marketRouter.get(
+  "/",
   security.protect,
-  security.restrictTo("admin", "user"),
+  security.restrictTo("admin"),
+  marketController.getAll
+);
+
+// Market Stock
+marketRouter.post(
+  "/:marketid/newStock",
+  security.protect,
+  security.restrictTo("admin"),
   marketStockController.newStock
+);
+
+marketRouter.patch(
+  "/:marketid/updateStock",
+  security.protect,
+  security.restrictTo("admin"),
+  marketStockController.updateStock
+);
+
+marketRouter.delete(
+  "/:marketid/deleteStock/:productid",
+  security.protect,
+  security.restrictTo("admin"),
+  marketStockController.deleteStock
 );
 
 export default marketRouter;

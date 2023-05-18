@@ -25,3 +25,9 @@ export const Roles = Object.freeze({
   User: "user",
   Admin: "admin",
 });
+
+export const CartStatus = Object.freeze({
+  Pending: "pending",
+  Purchased: "purchased",
+  Declined: "declined",
+});

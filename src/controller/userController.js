@@ -2,17 +2,11 @@ import { catchAsync, filterObj } from "../util/Helpers.js";
 import { User } from "../schema/userSchema.js";
 import { HttpStatus } from "../util/Constants.js";
 import ErrorHandler from "../util/ErrorHandler.js";
+import { getAll } from "./crudFactoryController.js";
 
 const userController = {
-  getAllUsers: catchAsync(async (req, res, next) => {
-    const users = await User.find();
+  getAllUsers: getAll(User),
 
-    res.status(HttpStatus.OK).json({
-      status: "success",
-      results: users.length,
-      data: { users },
-    });
-  }),
   deleteMe: catchAsync(async (req, res, next) => {
     await User.findByIdAndUpdate(req.user.id, { active: false });
 

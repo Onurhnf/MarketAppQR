@@ -2,19 +2,12 @@ import { catchAsync } from "../util/Helpers.js";
 import { Market } from "../schema/marketSchema.js";
 import { HttpStatus } from "../util/Constants.js";
 import ErrorHandler from "../util/ErrorHandler.js";
+import { createOne, getAll, getOne } from "./crudFactoryController.js";
 
 const marketController = {
-  newMarket: catchAsync(async (req, res, next) => {
-    const newMarket = await Market.create({
-      name: req.body.name,
-      adress: req.body.adress,
-    });
-
-    res.status(HttpStatus.CREATED).json({
-      status: "success",
-      data: { newMarket },
-    });
-  }),
+  newMarket: createOne(Market),
+  getMarket: getOne(Market),
+  getAll: getAll(Market),
   QRCodeImage: catchAsync(async (req, res, next) => {
     const { id, QRCodeImage } = req.body;
     if (!id || !QRCodeImage) {
@@ -47,15 +40,6 @@ const marketController = {
         next(new ErrorHandler(err.message, HttpStatus.INTERNAL_SERVER_ERROR));
       }
     }
-  }),
-  getMarket: catchAsync(async (req, res, next) => {
-    const { marketid } = req.params;
-    const market = await Market.findById(marketid);
-
-    res.status(HttpStatus.OK).json({
-      status: "success",
-      data: { market },
-    });
   }),
 };
 

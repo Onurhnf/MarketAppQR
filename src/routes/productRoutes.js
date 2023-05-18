@@ -11,4 +11,11 @@ productRouter.post(
   productController.newProduct
 );
 
+productRouter.get(
+  "/",
+  security.protect,
+  security.restrictTo("admin"),
+  productController.getAll
+);
+
 export default productRouter;
