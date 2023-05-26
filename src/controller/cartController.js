@@ -270,6 +270,46 @@ const cartController = {
       message: "Cart declined successfully.",
     });
   }),
+
+  deleteOne: catchAsync(async (req, res, next) => {
+    const { cartid } = req.params;
+    const { itemid } = req.body;
+
+    const cart = await Cart.findOne({
+      _id: cartid,
+      status: CartStatus.Pending,
+    });
+
+    if (!cart) {
+      return next(
+        new ErrorHandler(
+          "Cart not found or its status is not pending.",
+          HttpStatus.NOT_FOUND
+        )
+      );
+    }
+
+    // Find the index of the item to be deleted in the cart's products array
+    const itemIndex = cart.products.findIndex((item) =>
+      item._id.equals(itemid)
+    );
+
+    if (itemIndex === -1) {
+      return next(
+        new ErrorHandler("Item not found in the cart.", HttpStatus.NOT_FOUND)
+      );
+    }
+
+    // Remove the item from the products array
+    cart.products.splice(itemIndex, 1);
+
+    await cart.save();
+
+    res.status(HttpStatus.OK).json({
+      status: "success",
+      data: { cart },
+    });
+  }),
 };
 
 export default cartController;

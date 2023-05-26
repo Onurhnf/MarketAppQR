@@ -54,4 +54,11 @@ cartRouter.post(
   cartController.declineCart
 );
 
+cartRouter.delete(
+  "/:cartid/delete",
+  security.protect,
+  security.restrictTo(Roles.Admin, Roles.Staff, Roles.User),
+  cartController.deleteOne
+);
+
 export default cartRouter;
