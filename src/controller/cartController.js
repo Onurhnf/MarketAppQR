@@ -1,11 +1,27 @@
 import Cart from "../schema/cartSchema.js";
 import { MarketStock } from "../schema/marketStockSchema.js";
+import { Product } from "../schema/productSchema.js";
 import { CartStatus, HttpStatus } from "../util/Constants.js";
 import ErrorHandler from "../util/ErrorHandler.js";
 import { catchAsync } from "../util/Helpers.js";
-import { getAll, getOne } from "./crudFactoryController.js";
+import { getAll } from "./crudFactoryController.js";
 
 const cartController = {
+  cartHistory: catchAsync(async (req, res, next) => {
+    const userId = req.user._id;
+
+    const carts = await Cart.find({
+      userId,
+      status: { $in: [CartStatus.Purchased, CartStatus.Declined] },
+    });
+
+    res.status(HttpStatus.OK).json({
+      status: "success",
+      data: {
+        carts,
+      },
+    });
+  }),
   createCart: catchAsync(async (req, res, next) => {
     const { marketId } = req.body;
     const userId = req.user._id;
@@ -96,10 +112,27 @@ const cartController = {
           )
         );
       }
+
+      // Fetch the product name from the Product schema based on the marketstockid
+      const product = await Product.findOne({
+        _id: marketStock.productid,
+      });
+
+      if (!product) {
+        return next(
+          new ErrorHandler(
+            "Product not found for the given marketstockid.",
+            HttpStatus.NOT_FOUND
+          )
+        );
+      }
+
       // Create a new item and add it to the cart's products array
       const newItem = {
         marketstockid: marketStock._id,
         quantity,
+        productName: product.name,
+        price: marketStock.price,
       };
 
       cart.products.push(newItem);

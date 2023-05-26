@@ -19,4 +19,11 @@ productRouter.get(
   productController.getAll
 );
 
+productRouter.get(
+  "/:id",
+  security.protect,
+  security.restrictTo(Roles.Admin, Roles.Staff, Roles.User),
+  productController.getOne
+);
+
 export default productRouter;

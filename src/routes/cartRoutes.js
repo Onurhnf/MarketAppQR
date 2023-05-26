@@ -5,6 +5,13 @@ import { Roles } from "../util/Constants.js";
 
 const cartRouter = express.Router();
 
+cartRouter.get(
+  "/history",
+  security.protect,
+  security.restrictTo(Roles.Admin, Roles.Staff, Roles.User),
+  cartController.cartHistory
+);
+
 cartRouter.post(
   "/create",
   security.protect,
