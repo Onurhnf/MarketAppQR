@@ -4,6 +4,7 @@ import { User } from "../schema/userSchema.js";
 import { HttpStatus } from "../util/Constants.js";
 import { catchAsync, createAndSendToken } from "../util/Helpers.js";
 import sendEmail from "../util/Email.js";
+import Cart from "../schema/cartSchema.js";
 
 const authController = {
   /**
@@ -133,6 +134,18 @@ const authController = {
           HttpStatus.UNAUTHORIZED
         )
       );
+    }
+
+    // Check if there is an existing pending cart for the user
+    const pendingCart = await Cart.findOne({
+      userId: user._id,
+      status: "pending",
+    });
+
+    if (pendingCart) {
+      // Set the status of the pending cart to 'declined'
+      pendingCart.status = "declined";
+      await pendingCart.save();
     }
 
     user.password = req.body.password;

@@ -12,16 +12,18 @@ const cartController = {
 
     const carts = await Cart.find({
       userId,
-      status: { $in: [CartStatus.Purchased, CartStatus.Declined] },
-    });
+      status: { $in: [CartStatus.Purchased] },
+    }).sort({ createdAt: -1 });
 
     res.status(HttpStatus.OK).json({
       status: "success",
+      results: carts.length,
       data: {
-        carts,
+        carts: carts.reverse(),
       },
     });
   }),
+
   createCart: catchAsync(async (req, res, next) => {
     const { marketId } = req.body;
     const userId = req.user._id;
