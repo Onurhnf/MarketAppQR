@@ -52,12 +52,15 @@ export const getOne = (Model, popOptions) =>
   catchAsync(async (req, res, next) => {
     let query = Model.findById(req.params.id);
     if (popOptions) query = query.populate(popOptions);
-    const doc = await query;
-
-    if (!doc) {
-      return next(
-        new ErrorHandler("No document found with that ID", HttpStatus.NOT_FOUND)
-      );
+    let doc;
+    try {
+      doc = await query;
+    } catch (error) {
+      if (!doc) {
+        return next(
+          new ErrorHandler("Nothing found with that ID", HttpStatus.NOT_FOUND)
+        );
+      }
     }
 
     res.status(HttpStatus.OK).json({
