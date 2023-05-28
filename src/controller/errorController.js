@@ -57,6 +57,9 @@ const sendErrorProd = (err, req, res) => {
   // A) API
   if (req.originalUrl.startsWith("/api")) {
     // 1) Trusted error: send message to client
+    console.log("originalUrl2", req.originalUrl);
+    console.log("isOp", err.isOperational);
+
     if (err.isOperational) {
       return res.status(err.statusCode).json({
         status: err.status,
@@ -65,6 +68,8 @@ const sendErrorProd = (err, req, res) => {
     }
     // 2) Programming or other unknown error
     console.error("ERROR", err);
+    console.log("originalUrl", req.originalUrl);
+
     return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
       status: "error",
       message: "Something went very wrong!",
@@ -98,6 +103,7 @@ export const ErrorCatcher = (err, req, res, next) => {
   } else if (process.env.NODE_ENV === "production") {
     let error = { ...err };
     error.message = err.message;
+    console.log(err.message);
 
     if (error.name === "CastError") error = handleCastErrorDB(error);
     if (error.code === 11000) error = handleDuplicateFieldsDB(error);
