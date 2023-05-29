@@ -158,7 +158,9 @@ const cartController = {
         quantity,
         productName: product.name,
         price: marketStock.price,
+        productImage: product.image,
       };
+      console.log({ newItem });
 
       cart.products.push(newItem);
     }

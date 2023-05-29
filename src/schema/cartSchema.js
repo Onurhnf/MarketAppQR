@@ -29,6 +29,9 @@ const cartSchema = new mongoose.Schema({
         type: String,
         required: true,
       },
+      productImage: {
+        type: String,
+      },
       price: {
         type: Number,
         required: [true, "Stock must have a price for one unit"],
