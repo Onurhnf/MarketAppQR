@@ -9,7 +9,7 @@ const marketRouter = express.Router();
 marketRouter.get(
   "/:id",
   security.protect,
-  security.restrictTo(Roles.Admin, Roles.Staff),
+  security.restrictTo(Roles.Admin, Roles.Staff, Roles.User),
   marketController.getMarket
 );
 

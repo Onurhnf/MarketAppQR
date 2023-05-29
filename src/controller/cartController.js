@@ -12,14 +12,35 @@ const cartController = {
 
     const carts = await Cart.find({
       userId,
-      status: { $in: [CartStatus.Purchased] },
+      status: { $in: [CartStatus.Purchased, CartStatus.Declined] },
     }).sort({ createdAt: -1 });
+
+    const populatedCarts = await Cart.populate(carts, {
+      path: "marketId",
+      select: "name",
+    });
+
+    const formattedCarts = populatedCarts.map(async (cart) => {
+      const totalCost = await cart.calculateTotalCost();
+      return {
+        ...cart.toObject(),
+        marketName: cart.marketId ? cart.marketId.name : null,
+        marketId: cart.marketId ? cart.marketId._id : null,
+        totalCost,
+      };
+    });
+
+    const cartsWithTotalCost = await Promise.all(formattedCarts);
+
+    const filteredCarts = cartsWithTotalCost.filter(
+      (cart) => cart.products.length > 0
+    );
 
     res.status(HttpStatus.OK).json({
       status: "success",
-      results: carts.length,
+      results: filteredCarts.length,
       data: {
-        carts: carts.reverse(),
+        carts: filteredCarts.reverse(),
       },
     });
   }),
@@ -35,9 +56,10 @@ const cartController = {
     });
 
     if (existingCart) {
+      existingCart.status = CartStatus.Declined;
       return next(
         new ErrorHandler(
-          "A pending cart already exists for this user and market.",
+          "Please Scan the QR code again to create a new cart. There was a an existing cart from your last use and it is declined.",
           HttpStatus.CONFLICT
         )
       );
