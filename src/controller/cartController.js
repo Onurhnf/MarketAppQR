@@ -57,6 +57,7 @@ const cartController = {
 
     if (existingCart) {
       existingCart.status = CartStatus.Declined;
+      await existingCart.save();
       return next(
         new ErrorHandler(
           "Please Scan the QR code again to create a new cart. There was a an existing cart from your last use and it is declined.",
