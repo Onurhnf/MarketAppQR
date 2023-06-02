@@ -37,7 +37,7 @@ You can use tools like Postman to send requests to the above URL and explore the
 1. Clone the repository: `git clone https://github.com/Onurhnf/tara-backend-nodejs-expressjs`
 2. Install the dependencies: `npm install`
 3. Configure your own database connection in the `.env` file.
-4. Start the server: `npm start`
+4. Start the server on development: `npm run start:dev` on production: `npm run start:prod`
 
 ## Environment
 
