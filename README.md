@@ -17,6 +17,14 @@ Market App is a mobile application that revolutionizes the shopping experience b
 
 Please note that the current version of the back-end repository does not include the implementation of payment functionality. If you wish to integrate payment features into your application, you will need to implement the necessary code and configuration to connect with a payment gateway of your choice.
 
+## Demo Usage
+
+You can try out the API endpoints by sending requests to the following URL: [https://tara-app-onurhnf.onrender.com](https://tara-app-onurhnf.onrender.com)
+
+Example: [https://tara-app-onurhnf.onrender.com/api/v1/users/me](https://tara-app-onurhnf.onrender.com/api/v1/users/me)
+
+You can use tools like Postman to send requests to the above URL and explore the responses for the different paths defined in the routes file.
+
 ## Technologies Used
 
 - Front-end: [React Native](https://reactnative.dev/) with [NativeBase](https://nativebase.io/)
