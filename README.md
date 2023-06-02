@@ -1,8 +1,8 @@
-# Tara App (QR and Barcode scanning based Shopping App)
+# TARA App (QR and Barcode scanning based Shopping App)
 
-Market App is a mobile application that revolutionizes the shopping experience by enabling users to enter and leave stores using QR codes, scan product barcodes, and make online payments directly from their phones. This app eliminates the need for traditional checkout processes, saving time, and ensuring contactless transactions, especially in situations like pandemics where maintaining social distance is crucial.
+TARA App is a mobile application that revolutionizes the shopping experience by enabling users to enter and leave stores using QR codes, scan product barcodes, and make online payments directly from their phones. This app eliminates the need for traditional checkout processes, saving time, and ensuring contactless transactions, especially in situations like pandemics where maintaining social distance is crucial.
 
-- For the front-end part of the application, please refer to the **[Tara Mobile Frontend](https://github.com/Onurhnf/tara-mobile-frontend-reactnative-nativebase) repository**.
+- For the front-end part of the application, please refer to the **[TARA Mobile Frontend](https://github.com/Onurhnf/tara-mobile-frontend-reactnative-nativebase) repository**.
 
 ## Features
 
